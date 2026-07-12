@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bible Trivia Beta</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="shell">
+<header><small>BETA 0.1</small><h1>Bible Trivia</h1><p>Choose a category, read the question, then reveal the answer.</p></header>
+
+<section id="loading" class="card"><p>Loading questions…</p></section>
+<section id="error" class="card hidden"><h2>Unable to load questions</h2><p id="errorText"></p></section>
+
+<section id="home" class="card hidden">
+<h2>Choose a Category</h2>
+<p class="muted">This beta is testing question quality, clarity, difficulty, and accuracy.</p>
+<div id="categories" class="grid"></div>
+</section>
+
+<section id="question" class="card hidden">
+<div class="meta"><span id="qCat"></span><span id="qDiff"></span></div>
+<p id="qId" class="muted"></p>
+<h2>Question</h2>
+<p id="qText" class="question"></p>
+<div class="actions"><button id="backBtn" class="secondary">Back</button><button id="answerBtn">Show Answer</button></div>
+</section>
+
+<section id="answer" class="card hidden">
+<div class="meta"><span id="aCat"></span><span id="aDiff"></span></div>
+<p id="aId" class="muted"></p>
+<h2>Answer</h2>
+<p id="aQuestion" class="muted strong"></p>
+<h3>Answer</h3><p id="aText" class="answer"></p>
+<h3>Scripture Reference</h3><p id="aRef"></p>
+<div class="actions three"><button id="feedbackBtn" class="secondary">Feedback</button><button id="nextBtn">Next Question</button><button id="homeBtn" class="secondary">Home</button></div>
+</section>
+
+<footer><p>Bible Trivia Platform Beta — Questions are under review.</p></footer>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
