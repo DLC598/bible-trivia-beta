@@ -28,6 +28,10 @@ function resetFeedbackPanel(){
   [fbQuestion,fbAnswer,fbScripture,fbCategory,fbDifficulty].forEach(x=>{if(x)x.checked=false});
   if(fbComment)fbComment.value='';
   if(feedbackPanel)feedbackPanel.classList.add('hidden');
+  if(goodBtn)goodBtn.disabled=false;
+  if(badBtn)badBtn.disabled=false;
+  if(submitFeedbackBtn)submitFeedbackBtn.disabled=false;
+  if(cancelFeedbackBtn)cancelFeedbackBtn.disabled=false;
 }
 
 function returnHome(){
