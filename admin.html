@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Bible Trivia Dashboard</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="dashboard-shell">
+    <section id="loginView" class="login-card">
+      <p class="eyebrow">PRIVATE ADMIN</p>
+      <h1>Bible Trivia Dashboard</h1>
+      <p>Enter the approved administrator email to receive a secure sign-in link.</p>
+      <form id="loginForm">
+        <label for="emailInput">Email</label>
+        <input id="emailInput" type="email" autocomplete="email" required>
+        <button type="submit">Send Sign-In Link</button>
+      </form>
+      <p id="loginMessage" class="message" aria-live="polite"></p>
+    </section>
+
+    <section id="dashboardView" class="hidden">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">BIBLE TRIVIA PLATFORM</p>
+          <h1>Feedback Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+          <button id="refreshBtn" class="secondary">Refresh</button>
+          <button id="signOutBtn" class="secondary">Sign Out</button>
+        </div>
+      </header>
+
+      <section class="metrics" aria-label="Feedback summary">
+        <article><span>Total</span><strong id="totalMetric">0</strong></article>
+        <article><span>Positive</span><strong id="positiveMetric">0</strong></article>
+        <article><span>Needs Attention</span><strong id="negativeMetric">0</strong></article>
+        <article><span>New</span><strong id="newMetric">0</strong></article>
+        <article><span>Comments</span><strong id="commentsMetric">0</strong></article>
+      </section>
+
+      <section class="controls">
+        <input id="searchInput" type="search" placeholder="Search Question ID, tag, or comment">
+        <select id="voteFilter">
+          <option value="all">All votes</option>
+          <option value="1">Positive</option>
+          <option value="-1">Needs Attention</option>
+        </select>
+        <select id="statusFilter">
+          <option value="all">All statuses</option>
+          <option>New</option>
+          <option>Under Review</option>
+          <option>Revision Planned</option>
+          <option>Resolved</option>
+          <option>Dismissed</option>
+        </select>
+      </section>
+
+      <p id="dashboardMessage" class="message" aria-live="polite"></p>
+
+      <section class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Question</th>
+                <th>Vote</th>
+                <th>Issues</th>
+                <th>Comment</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="feedbackBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
