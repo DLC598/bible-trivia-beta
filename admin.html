@@ -4,83 +4,90 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Bible Trivia Dashboard</title>
-  <link rel="stylesheet" href="admin.css">
+  <title>Bible Trivia Admin</title>
+  <link rel="stylesheet" href="admin.css?v=1.1">
 </head>
 <body>
-  <main class="dashboard-shell">
-    <section id="loginView" class="login-card">
-      <p class="eyebrow">PRIVATE ADMIN</p>
-      <h1>Bible Trivia Dashboard</h1>
-      <p>Enter the approved administrator email to receive a secure sign-in link.</p>
+  <section id="loginView" class="login-page">
+    <div class="login-card">
+      <p class="eyebrow">PRIVATE ADMINISTRATION PORTAL</p>
+      <h1>Bible Trivia</h1>
+      <p>Manage questions, review feedback, organize categories, and prepare updates from one place.</p>
       <form id="loginForm">
-        <label for="emailInput">Email</label>
+        <label for="emailInput">Administrator email</label>
         <input id="emailInput" type="email" autocomplete="email" required>
-        <button type="submit">Send Sign-In Link</button>
+        <button type="submit">Send Secure Sign-In Link</button>
       </form>
       <p id="loginMessage" class="message" aria-live="polite"></p>
-    </section>
+    </div>
+  </section>
 
-    <section id="dashboardView" class="hidden">
+  <div id="dashboardView" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">📖</div><div><strong>BIBLE TRIVIA</strong><span>ADMIN DASHBOARD</span></div></div>
+      <nav>
+        <button class="nav-item active" data-view="overview">⌂ <span>Dashboard</span></button>
+        <button class="nav-item" data-view="questions">▤ <span>Questions</span></button>
+        <button class="nav-item" id="navAddQuestion">＋ <span>Add Question</span></button>
+        <button class="nav-item" data-view="categories">◇ <span>Categories</span></button>
+        <button class="nav-item" data-view="feedback">● <span>Feedback</span><b id="feedbackBadge" class="badge">0</b></button>
+      </nav>
+      <div class="app-status">
+        <span>APP STATUS</span><strong>LIVE</strong><p>Version 1.02</p>
+        <a href="index.html" target="_blank" rel="noopener">View Live App ↗</a>
+      </div>
+      <button id="signOutBtn" class="signout">Sign Out</button>
+    </aside>
+
+    <main class="main">
       <header class="topbar">
-        <div>
-          <p class="eyebrow">BIBLE TRIVIA PLATFORM</p>
-          <h1>Feedback Dashboard</h1>
-        </div>
-        <div class="topbar-actions">
-          <button id="refreshBtn" class="secondary">Refresh</button>
-          <button id="signOutBtn" class="secondary">Sign Out</button>
-        </div>
+        <div><button id="menuBtn" class="menu-btn">☰</button><div><h1 id="pageTitle">Welcome back, Daniel</h1><p id="pageSubtitle">Here is what is happening with your Bible Trivia app.</p></div></div>
+        <div class="top-actions"><button id="refreshBtn" class="secondary">Refresh</button><span class="profile">DC</span></div>
       </header>
-
-      <section class="metrics" aria-label="Feedback summary">
-        <article><span>Total</span><strong id="totalMetric">0</strong></article>
-        <article><span>Positive</span><strong id="positiveMetric">0</strong></article>
-        <article><span>Needs Attention</span><strong id="negativeMetric">0</strong></article>
-        <article><span>New</span><strong id="newMetric">0</strong></article>
-        <article><span>Comments</span><strong id="commentsMetric">0</strong></article>
-      </section>
-
-      <section class="controls">
-        <input id="searchInput" type="search" placeholder="Search Question ID, tag, or comment">
-        <select id="voteFilter">
-          <option value="all">All votes</option>
-          <option value="1">Positive</option>
-          <option value="-1">Needs Attention</option>
-        </select>
-        <select id="statusFilter">
-          <option value="all">All statuses</option>
-          <option>New</option>
-          <option>Under Review</option>
-          <option>Revision Planned</option>
-          <option>Resolved</option>
-          <option>Dismissed</option>
-        </select>
-      </section>
 
       <p id="dashboardMessage" class="message" aria-live="polite"></p>
 
-      <section class="table-card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Question</th>
-                <th>Vote</th>
-                <th>Issues</th>
-                <th>Comment</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="feedbackBody"></tbody>
-          </table>
+      <section id="overviewView" class="view">
+        <div class="metrics">
+          <article><span>Total Questions</span><strong id="totalQuestionsMetric">0</strong><small>Database question bank</small></article>
+          <article><span>Published</span><strong id="publishedMetric">0</strong><small>Ready for the live app</small></article>
+          <article><span>Feedback Items</span><strong id="feedbackMetric">0</strong><small id="newFeedbackText">0 new</small></article>
+          <article><span>Needs Attention</span><strong id="attentionMetric">0</strong><small>Unresolved negative reports</small></article>
+        </div>
+
+        <div class="overview-grid">
+          <section class="panel wide"><div class="panel-head"><div><h2>Question Management</h2><p>Recently updated questions</p></div><div><button data-view="questions" class="secondary jump">View All</button><button id="overviewAddBtn">+ Add Question</button></div></div><div id="recentQuestions" class="question-list"></div></section>
+          <section class="panel"><div class="panel-head"><div><h2>Recent Feedback</h2><p>Latest reports from players</p></div><button data-view="feedback" class="secondary jump">View All</button></div><div id="recentFeedback" class="feedback-list"></div></section>
+          <section class="panel categories-panel"><div class="panel-head"><div><h2>Categories</h2><p>Question distribution</p></div><button data-view="categories" class="secondary jump">Manage</button></div><div id="categoryPreview" class="category-preview"></div></section>
+          <section class="panel"><div class="panel-head"><div><h2>Quick Actions</h2><p>Common administration tasks</p></div></div><div class="quick-actions"><button id="quickAdd">＋<span>Add New Question<small>Create a question</small></span></button><button id="importBtn">⇧<span>Import Current Bank<small>Load questions.json</small></span></button><button data-view="feedback" class="jump">●<span>Review Feedback<small>Resolve player reports</small></span></button><button id="exportBtn">⇩<span>Export Published JSON<small>Download current bank</small></span></button></div></section>
         </div>
       </section>
-    </section>
-  </main>
+
+      <section id="questionsView" class="view hidden">
+        <div class="page-tools"><div><input id="questionSearch" type="search" placeholder="Search question, answer, ID, or reference"><select id="questionCategoryFilter"><option value="all">All categories</option></select><select id="questionStatusFilter"><option value="all">All statuses</option><option>Published</option><option>Draft</option><option>Retired</option></select></div><button id="addQuestionBtn">+ Add Question</button></div>
+        <section class="panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Question</th><th>Category</th><th>Difficulty</th><th>Status</th><th>Updated</th><th></th></tr></thead><tbody id="questionsBody"></tbody></table></div></section>
+      </section>
+
+      <section id="feedbackView" class="view hidden">
+        <div class="page-tools"><div><input id="feedbackSearch" type="search" placeholder="Search question ID, tag, or comment"><select id="voteFilter"><option value="all">All votes</option><option value="1">Positive</option><option value="-1">Needs Attention</option></select><select id="statusFilter"><option value="all">All statuses</option><option>New</option><option>Under Review</option><option>Revision Planned</option><option>Resolved</option><option>Dismissed</option></select></div></div>
+        <section class="panel"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Question</th><th>Vote</th><th>Issues</th><th>Comment</th><th>Status</th></tr></thead><tbody id="feedbackBody"></tbody></table></div></section>
+      </section>
+
+      <section id="categoriesView" class="view hidden"><section class="panel"><div class="panel-head"><div><h2>Category Management</h2><p>Review category totals and banner assignments.</p></div></div><div id="categoriesGrid" class="categories-grid"></div></section></section>
+    </main>
+  </div>
+
+  <dialog id="questionDialog">
+    <form id="questionForm" method="dialog">
+      <div class="dialog-head"><div><p class="eyebrow">QUESTION EDITOR</p><h2 id="dialogTitle">Add Question</h2></div><button type="button" id="closeDialog" class="icon-btn">×</button></div>
+      <input id="originalQuestionId" type="hidden">
+      <div class="form-grid"><label>Question ID<input id="questionId" required placeholder="BT-0001"></label><label>Category<select id="questionCategory" required></select></label><label>Difficulty<select id="questionDifficulty"><option>Easy</option><option selected>Medium</option><option>Hard</option></select></label><label>Status<select id="questionStatus"><option>Draft</option><option>Published</option><option>Retired</option></select></label></div>
+      <label>Question<textarea id="questionText" required></textarea></label><label>Answer<textarea id="answerText" required></textarea></label><label>Scripture Reference<input id="referenceText" placeholder="Matthew 5–7"></label>
+      <div class="dialog-actions"><button type="button" id="cancelDialog" class="secondary">Cancel</button><button type="submit">Save Question</button></div>
+    </form>
+  </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="admin.js"></script>
+  <script src="admin.js?v=1.1"></script>
 </body>
 </html>
