@@ -90,28 +90,29 @@ async function load(){
 }
 
 function renderCategories(){
-  const counts={};
-  s.questions.forEach(q=>{
-    const category=(q.category||'Uncategorized').trim();
-    counts[category]=(counts[category]||0)+1;
-  });
-
+  const categories=[...new Set(s.questions.map(q=>(q.category||'Uncategorized').trim()))].sort();
   const box=document.querySelector('#categories');
   box.innerHTML='';
 
-  Object.entries(counts).sort().forEach(([category,count])=>{
+  categories.forEach(category=>{
     const button=document.createElement('button');
     button.className='category';
     button.type='button';
-    button.setAttribute('aria-label',`${category}: ${count} ${count===1?'question':'questions'}`);
+    button.setAttribute('aria-label',category);
 
     const banner=CATEGORY_BANNERS[category];
     if(banner){
-      button.style.backgroundImage=`url("${encodeURI(banner)}")`;
-      button.classList.add('has-banner');
+      const image=document.createElement('img');
+      image.src=encodeURI(banner);
+      image.alt='';
+      image.loading='eager';
+      image.decoding='async';
+      button.appendChild(image);
+    }else{
+      button.textContent=category;
+      button.classList.add('text-fallback');
     }
 
-    button.innerHTML=`<span class="category-label">${category}</span><span class="count">${count} ${count===1?'question':'questions'}</span>`;
     button.onclick=()=>{s.category=category;s.seen.clear();nextQuestion()};
     box.appendChild(button);
   });
