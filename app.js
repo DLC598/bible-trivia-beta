@@ -26,6 +26,15 @@ const CATEGORY_BANNERS={
   'Wisdom & Prophets':'Wisdom and Prophets Banner.png'
 };
 
+const CATEGORY_CLASSES={
+  'Doctrine':'doctrine',
+  'Geography':'geography',
+  'Gospels':'gospels',
+  'History':'history',
+  'People':'people',
+  'Wisdom & Prophets':'wisdom'
+};
+
 function getSessionId(){
   const key='bibleTriviaAnonymousSessionId';
   let id=localStorage.getItem(key);
@@ -96,7 +105,8 @@ function renderCategories(){
 
   categories.forEach(category=>{
     const button=document.createElement('button');
-    button.className='category';
+    const categoryClass=CATEGORY_CLASSES[category]||'default';
+    button.className=`category category-${categoryClass}`;
     button.type='button';
     button.setAttribute('aria-label',category);
 
