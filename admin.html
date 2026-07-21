@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Bible Trivia Studio</title>
   <link rel="stylesheet" href="admin.css?v=1.3">
-  <link rel="stylesheet" href="admin-review.css?v=1.3">
+  <link rel="stylesheet" href="admin-review.css?v=1.4">
 </head>
 <body>
   <section id="loginView" class="login-page">
@@ -36,7 +36,7 @@
         <button class="nav-item" data-view="feedback">● <span>Feedback</span><b id="feedbackBadge" class="badge">0</b></button>
       </nav>
       <div class="app-status">
-        <span>APP STATUS</span><strong>LIVE</strong><p>Studio MVP 1.3</p>
+        <span>APP STATUS</span><strong>LIVE</strong><p>Studio MVP 1.4</p>
         <a href="index.html" target="_blank" rel="noopener">View Live App ↗</a>
       </div>
       <button id="signOutBtn" class="signout">Sign Out</button>
@@ -102,7 +102,7 @@
       <label>Passage Text<textarea id="passageText" class="passage-text" placeholder="Paste the Scripture passage here. This is private editorial content unless later added to the player experience."></textarea></label>
       <label>Internal Notes<textarea id="internalNotes" placeholder="Private notes, concerns, source details, or revision reminders."></textarea></label>
       <fieldset class="review-box"><legend>Editorial Review</legend><label class="check-row"><input id="questionReviewed" type="checkbox"><span><strong>Reviewed</strong><small>I have checked this question, answer, reference, and passage.</small></span></label><label class="check-row warning-check"><input id="questionNeedsWork" type="checkbox"><span><strong>Needs More Work</strong><small>Keep this question at the front of the review queue.</small></span></label><p id="reviewedDateText" class="review-date"></p></fieldset>
-      <div class="dialog-actions editor-actions"><button type="button" id="previousQuestionBtn" class="secondary">← Previous</button><span class="action-spacer"></span><button type="button" id="cancelDialog" class="secondary">Close</button><button type="submit" id="saveQuestionBtn">Save</button><button type="button" id="saveNextBtn">Save & Next Review →</button></div>
+      <div class="dialog-actions editor-actions"><button type="button" id="previousQuestionBtn" class="secondary">← Previous</button><button type="button" id="deleteQuestionBtn" class="danger hidden">Delete Question</button><span class="action-spacer"></span><button type="button" id="cancelDialog" class="secondary">Close</button><button type="submit" id="saveQuestionBtn">Save</button><button type="button" id="saveNextBtn">Save & Next Review →</button></div>
     </form>
   </dialog>
 
@@ -127,6 +127,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="admin.js?v=1.2"></script>
-  <script src="admin-review.js?v=1.3"></script>
+  <script src="admin-review.js?v=1.4"></script>
 </body>
 </html>
