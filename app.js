@@ -6,7 +6,6 @@ const goodBtn=document.getElementById('goodBtn');
 const badBtn=document.getElementById('badBtn');
 const knewBtn=document.getElementById('knewBtn');
 const learningBtn=document.getElementById('learningBtn');
-const homeBtn=document.getElementById('homeBtn');
 const learningMessage=document.getElementById('learningMessage');
 const feedbackMessage=document.getElementById('feedbackMessage');
 const feedbackPanel=document.getElementById('feedbackPanel');
@@ -66,7 +65,6 @@ function nextQuestion(){
 }
 answerBtn.onclick=()=>{const q=s.current;if(!q)return;aCat.textContent=q.category||'';aDiff.textContent=q.difficulty||'';aId.textContent=q.id?`Question ID: ${q.id}`:'';aQuestion.textContent=q.question||'';aText.textContent=q.answer||'';aRef.textContent=q.reference||'No reference provided';resetAnswerControls();show('answer')};
 backBtn.onclick=returnHome;
-homeBtn.onclick=returnHome;
 nextBtn.onclick=()=>{if(!s.category)returnHome();else nextQuestion()};
 
 async function handleLearning(responseValue,selectedButton){
