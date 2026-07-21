@@ -1,6 +1,6 @@
 const s={questions:[],current:null,category:null,seen:new Set()};
-const v={loading:document.querySelector('#loading'),error:document.querySelector('#error'),home:document.querySelector('#home'),question:document.querySelector('#question'),answer:document.querySelector('#answer')};
-const show=n=>{Object.values(v).forEach(x=>x.classList.add('hidden'));v[n].classList.remove('hidden');scrollTo(0,0)};
+const v={loading:document.querySelector('#loading'),error:document.querySelector('#error'),home:document.querySelector('#home'),question:document.querySelector('#question'),answer:document.querySelector('#answer'),submitQuestion:document.querySelector('#submitQuestion')};
+const show=n=>{Object.values(v).forEach(x=>x.classList.add('hidden'));v[n].classList.remove('hidden');document.body.classList.toggle('inner-screen',n==='question'||n==='answer'||n==='submitQuestion');scrollTo(0,0)};
 
 const goodBtn=document.getElementById('goodBtn');
 const badBtn=document.getElementById('badBtn');
@@ -17,13 +17,24 @@ const fbScripture=document.getElementById('fbScripture');
 const fbCategory=document.getElementById('fbCategory');
 const fbDifficulty=document.getElementById('fbDifficulty');
 const fbComment=document.getElementById('fbComment');
+const openSubmitQuestionBtn=document.getElementById('openSubmitQuestionBtn');
+const submitQuestionForm=document.getElementById('submitQuestionForm');
+const submitQuestionBtn=document.getElementById('submitQuestionBtn');
+const cancelQuestionBtn=document.getElementById('cancelQuestionBtn');
+const submissionMessage=document.getElementById('submissionMessage');
+const sqQuestion=document.getElementById('sqQuestion');
+const sqCategory=document.getElementById('sqCategory');
+const sqDifficulty=document.getElementById('sqDifficulty');
+const sqAnswer=document.getElementById('sqAnswer');
+const sqScripture=document.getElementById('sqScripture');
 
 const SUPABASE_URL='https://crmywofbrznzgxibdevr.supabase.co';
 const SUPABASE_KEY='sb_publishable_LV4AP960e5zTc4hTwCwTaw_Ha_e2B2J';
 const QUESTIONS_URL=`${SUPABASE_URL}/rest/v1/questions`;
 const FEEDBACK_URL=`${SUPABASE_URL}/functions/v1/submit-feedback`;
 const LEARNING_URL=`${SUPABASE_URL}/functions/v1/submit-learning-response`;
-const APP_VERSION='beta-0.5-supabase-source';
+const SUBMIT_QUESTION_URL=`${SUPABASE_URL}/functions/v1/submit-question`;
+const APP_VERSION='beta-0.6-community-submissions';
 
 const CATEGORY_BANNERS={
   'Doctrine':'Doctrine Banner.png','Geography':'Geography Banner.png','Gospels':'Gospels Banner.png','History':'History Banner.png','People':'People Banner.png','Wisdom & Prophets':'Wisdom and Prophets Banner.png'
@@ -39,6 +50,7 @@ function resetAnswerControls(){
   learningMessage.textContent='';feedbackMessage.textContent='';
   [knewBtn,learningBtn,goodBtn,badBtn,submitFeedbackBtn,cancelFeedbackBtn].forEach(button=>{if(button){button.disabled=false;button.classList.remove('selected')}});
 }
+function resetSubmissionForm(){submitQuestionForm.reset();submissionMessage.textContent='';setBusy([submitQuestionBtn,cancelQuestionBtn],false)}
 function returnHome(){resetAnswerControls();s.current=null;s.category=null;s.seen.clear();show('home')}
 
 async function postJson(url,payload){
@@ -87,6 +99,16 @@ function nextQuestion(){
 answerBtn.onclick=()=>{const q=s.current;if(!q)return;aCat.textContent=q.category||'';aDiff.textContent=q.difficulty||'';aQuestion.textContent=q.question||'';aText.textContent=q.answer||'';aRef.textContent=q.reference||'No reference provided';resetAnswerControls();show('answer')};
 backBtn.onclick=returnHome;
 nextBtn.onclick=returnHome;
+openSubmitQuestionBtn.onclick=()=>{resetSubmissionForm();show('submitQuestion')};
+cancelQuestionBtn.onclick=returnHome;
+submitQuestionForm.onsubmit=async event=>{
+  event.preventDefault();
+  const payload={question:sqQuestion.value.trim(),category:sqCategory.value,difficulty:sqDifficulty.value,answer:sqAnswer.value.trim(),scripture:sqScripture.value.trim(),anonymous_session_id:getSessionId()};
+  if(!payload.question&&!payload.answer&&!payload.scripture){submissionMessage.textContent='Please provide at least a question, answer, or Scripture passage.';return}
+  setBusy([submitQuestionBtn,cancelQuestionBtn],true);submissionMessage.textContent='Submitting…';
+  try{await postJson(SUBMIT_QUESTION_URL,payload);submitQuestionForm.reset();submissionMessage.textContent='Thank you. Your submission is now waiting for review.';submitQuestionBtn.disabled=true;setTimeout(returnHome,1800)}
+  catch(e){console.error('Question submission failed',e);submissionMessage.textContent=e.message||'Submission could not be saved. Please try again.';setBusy([submitQuestionBtn,cancelQuestionBtn],false)}
+};
 
 async function handleLearning(responseValue,selectedButton){
   const q=s.current;if(!q)return;setBusy([knewBtn,learningBtn],true);learningMessage.textContent='Saving…';
