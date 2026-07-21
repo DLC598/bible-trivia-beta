@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430" role="img" aria-label="Ancient biblical landscape with a tree, valley, mountains, and temple ruins">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8e4b6"/>
+      <stop offset="0.58" stop-color="#efd19a"/>
+      <stop offset="1" stop-color="#c99550"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="38%" r="52%">
+      <stop offset="0" stop-color="#fff8dc" stop-opacity=".95"/>
+      <stop offset=".55" stop-color="#f4d79e" stop-opacity=".32"/>
+      <stop offset="1" stop-color="#8a5124" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b87535"/>
+      <stop offset="1" stop-color="#4c2914"/>
+    </linearGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="6" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0" result="g"/>
+      <feComponentTransfer in="g" result="f"><feFuncA type="table" tableValues="0 .11"/></feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="f" mode="multiply"/>
+    </filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  <rect width="1200" height="430" fill="url(#sky)"/>
+  <rect width="1200" height="430" fill="url(#glow)"/>
+  <g opacity=".28" fill="#7d4b24">
+    <path d="M0 197L98 112l77 68 76-92 107 109 73-83 87 79 95-111 103 111 96-86 105 90 89-66 94 66v87H0z"/>
+    <path d="M0 244l117-72 81 54 95-72 92 75 79-53 94 55 89-79 104 76 93-55 108 67 88-48 160 67v52H0z" opacity=".55"/>
+  </g>
+  <path d="M0 290c166-34 272-13 401 2 145 17 266 12 405-7 147-20 258-17 394 17v128H0z" fill="#d49a54" opacity=".84"/>
+  <path d="M0 330c177-37 335-10 479 12 156 24 300 24 426-4 111-25 207-26 295-1v93H0z" fill="url(#ground)"/>
+  <path d="M339 430c69-89 162-138 262-147 100-9 197 27 266 147z" fill="#f0c880" opacity=".42"/>
+  <path d="M487 430c35-87 76-130 124-130 48 0 93 44 130 130z" fill="#f7dca2" opacity=".55"/>
+  <g stroke="#5a3018" stroke-width="5" fill="none" opacity=".55">
+    <path d="M420 425c41-50 86-84 134-100"/>
+    <path d="M779 425c-41-50-86-84-134-100"/>
+    <path d="M469 421c28-35 58-60 90-75"/>
+    <path d="M731 421c-28-35-58-60-90-75"/>
+  </g>
+  <g transform="translate(0 8)" fill="#4a2815" stroke="#2f180d" stroke-width="3">
+    <path d="M44 330c15-70 20-134 61-195 17-25 31-38 49-57l25 14c-27 36-35 71-40 112-4 34 4 74 17 126z"/>
+    <path d="M102 151C43 149 7 121 0 79c53 6 84 26 105 62z"/>
+    <path d="M111 133C72 82 77 36 112 0c28 39 31 78 15 123z"/>
+    <path d="M132 143c13-57 48-93 98-104 1 49-23 84-82 113z"/>
+    <path d="M135 164c43-45 90-53 137-30-25 42-69 58-132 49z"/>
+    <circle cx="53" cy="121" r="45"/>
+    <circle cx="93" cy="84" r="51"/>
+    <circle cx="143" cy="69" r="48"/>
+    <circle cx="190" cy="91" r="42"/>
+    <circle cx="218" cy="134" r="38"/>
+    <circle cx="158" cy="126" r="52"/>
+    <circle cx="94" cy="139" r="48"/>
+  </g>
+  <g transform="translate(920 70)" fill="#6b3c1d" stroke="#3a1d0e" stroke-width="4">
+    <path d="M5 254h275v38H5z" fill="#4b2815"/>
+    <path d="M27 221h232v35H27z"/>
+    <path d="M44 67h198v26H44z"/>
+    <path d="M29 65L143 7l114 58z"/>
+    <path d="M48 95h25v125H48zM91 95h25v125H91zM134 95h25v125h-25zM177 95h25v125h-25zM220 95h25v125h-25z"/>
+    <path d="M39 90h214v18H39zM35 211h222v18H35z"/>
+    <path d="M256 130l60 45v117h-60z" opacity=".75"/>
+    <path d="M-28 161l60-34v165h-60z" opacity=".62"/>
+  </g>
+  <g fill="#4a2815" opacity=".8">
+    <circle cx="260" cy="350" r="7"/><path d="M256 357l-9 32h24l-8-32z"/>
+    <circle cx="301" cy="362" r="6"/><path d="M298 368l-7 26h20l-6-26z"/>
+    <circle cx="866" cy="349" r="7"/><path d="M862 356l-9 33h24l-8-33z"/>
+  </g>
+  <ellipse cx="600" cy="185" rx="235" ry="92" fill="#fff2c9" opacity=".22" filter="url(#soft)"/>
+  <rect width="1200" height="430" fill="transparent" filter="url(#grain)"/>
+  <rect x="4" y="4" width="1192" height="422" rx="5" fill="none" stroke="#6a3d1d" stroke-width="8" opacity=".28"/>
+</svg>
