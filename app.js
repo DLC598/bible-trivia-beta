@@ -61,9 +61,9 @@ function renderCategories(){
   categories.forEach(category=>{const button=document.createElement('button');button.className=`category category-${CATEGORY_CLASSES[category]||'default'}`;button.type='button';button.setAttribute('aria-label',category);const banner=CATEGORY_BANNERS[category];if(banner){const image=document.createElement('img');image.src=encodeURI(banner);image.alt='';image.loading='eager';image.decoding='async';button.appendChild(image)}else{button.textContent=category;button.classList.add('text-fallback')}button.onclick=()=>{s.category=category;s.seen.clear();nextQuestion()};box.appendChild(button)})
 }
 function nextQuestion(){
-  const pool=s.questions.filter(q=>(q.category||'').trim()===s.category);let cand=pool.filter(q=>!s.seen.has(q.id));if(!cand.length){s.seen.clear();cand=pool}const q=cand[Math.floor(Math.random()*cand.length)];s.current=q;s.seen.add(q.id);qCat.textContent=q.category||'';qDiff.textContent=q.difficulty||'';qId.textContent=q.id?`Question ID: ${q.id}`:'';qText.textContent=q.question||'';resetAnswerControls();show('question')
+  const pool=s.questions.filter(q=>(q.category||'').trim()===s.category);let cand=pool.filter(q=>!s.seen.has(q.id));if(!cand.length){s.seen.clear();cand=pool}const q=cand[Math.floor(Math.random()*cand.length)];s.current=q;s.seen.add(q.id);qCat.textContent=q.category||'';qDiff.textContent=q.difficulty||'';qText.textContent=q.question||'';resetAnswerControls();show('question')
 }
-answerBtn.onclick=()=>{const q=s.current;if(!q)return;aCat.textContent=q.category||'';aDiff.textContent=q.difficulty||'';aId.textContent=q.id?`Question ID: ${q.id}`:'';aQuestion.textContent=q.question||'';aText.textContent=q.answer||'';aRef.textContent=q.reference||'No reference provided';resetAnswerControls();show('answer')};
+answerBtn.onclick=()=>{const q=s.current;if(!q)return;aCat.textContent=q.category||'';aDiff.textContent=q.difficulty||'';aQuestion.textContent=q.question||'';aText.textContent=q.answer||'';aRef.textContent=q.reference||'No reference provided';resetAnswerControls();show('answer')};
 backBtn.onclick=returnHome;
 nextBtn.onclick=()=>{if(!s.category)returnHome();else nextQuestion()};
 
