@@ -76,6 +76,7 @@ function openQuestionDialog(q=null,mode='normal'){
   $('questionReviewed').checked=Boolean(q?.reviewed);
   $('questionNeedsWork').checked=Boolean(q?.needs_more_work);
   $('reviewedDateText').textContent=q?.reviewed_at?`Marked reviewed on ${fmtDate(q.reviewed_at)}.`:'';
+  $('deleteQuestionBtn').classList.toggle('hidden',!q);
   updateEditorQueueText(q);
   $('saveNextBtn').classList.toggle('hidden',mode!=='review');
   $('questionDialog').showModal();
@@ -132,6 +133,26 @@ async function persistQuestion(nextAfterSave=false){
   }else{$('questionDialog').close();setMessage('Question saved.');showView('questions');}
   return true;
 }
+async function deleteQuestion(){
+  const id=$('originalQuestionId').value.trim();
+  if(!id)return;
+  const q=questions.find(item=>item.id===id);
+  const label=q?.question?`\n\n${q.question}`:'';
+  if(!window.confirm(`Permanently delete question ${id}?${label}\n\nThis cannot be undone.`))return;
+  $('deleteQuestionBtn').disabled=true;
+  setMessage(`Deleting ${id}…`);
+  const {error}=await db.from('questions').delete().eq('id',id);
+  if(error){
+    $('deleteQuestionBtn').disabled=false;
+    setMessage(`Question could not be deleted: ${error.message}`);
+    return;
+  }
+  $('questionDialog').close();
+  reviewHistory=reviewHistory.filter(historyId=>historyId!==id);
+  await loadData();
+  setMessage(`Question ${id} was permanently deleted.`);
+  showView('questions');
+}
 async function saveQuestion(e){e.preventDefault();await persistQuestion(false);}
 
 const originalMapRow=mapRow;
@@ -166,5 +187,6 @@ commitImport=async function(){
 $('questionForm').onsubmit=saveQuestion;
 $('saveNextBtn').onclick=()=>persistQuestion(true);
 $('previousQuestionBtn').onclick=openPreviousReview;
+$('deleteQuestionBtn').onclick=deleteQuestion;
 [$('questionSearch'),$('questionCategoryFilter'),$('questionStatusFilter'),$('questionReviewFilter')].forEach(el=>el.oninput=renderQuestions);
 $('commitImportBtn').onclick=commitImport;
