@@ -18,9 +18,12 @@ const fbCategory=document.getElementById('fbCategory');
 const fbDifficulty=document.getElementById('fbDifficulty');
 const fbComment=document.getElementById('fbComment');
 
-const FEEDBACK_URL='https://crmywofbrznzgxibdevr.supabase.co/functions/v1/submit-feedback';
-const LEARNING_URL='https://crmywofbrznzgxibdevr.supabase.co/functions/v1/submit-learning-response';
-const APP_VERSION='beta-0.4-learning-responses';
+const SUPABASE_URL='https://crmywofbrznzgxibdevr.supabase.co';
+const SUPABASE_KEY='sb_publishable_LV4AP960e5zTc4hTwCwTaw_Ha_e2B2J';
+const QUESTIONS_URL=`${SUPABASE_URL}/rest/v1/questions`;
+const FEEDBACK_URL=`${SUPABASE_URL}/functions/v1/submit-feedback`;
+const LEARNING_URL=`${SUPABASE_URL}/functions/v1/submit-learning-response`;
+const APP_VERSION='beta-0.5-supabase-source';
 
 const CATEGORY_BANNERS={
   'Doctrine':'Doctrine Banner.png','Geography':'Geography Banner.png','Gospels':'Gospels Banner.png','History':'History Banner.png','People':'People Banner.png','Wisdom & Prophets':'Wisdom and Prophets Banner.png'
@@ -45,15 +48,33 @@ async function postJson(url,payload){
   return result;
 }
 async function submitFeedback(q,vote,issueTags=[],comment=''){
-  return postJson(FEEDBACK_URL,{question_id:q.id,vote,issue_tags:issueTags,comment,anonymous_session_id:getSessionId(),idempotency_key:crypto.randomUUID(),app_version:APP_VERSION,question_version:APP_VERSION,website:''});
+  return postJson(FEEDBACK_URL,{question_id:q.id,vote,issue_tags:issueTags,comment,anonymous_session_id:getSessionId(),idempotency_key:crypto.randomUUID(),app_version:APP_VERSION,question_version:q.updated_at||APP_VERSION,website:''});
 }
 async function submitLearning(q,response){
-  return postJson(LEARNING_URL,{question_id:q.id,response,anonymous_session_id:getSessionId(),idempotency_key:crypto.randomUUID(),app_version:APP_VERSION,question_version:APP_VERSION,website:''});
+  return postJson(LEARNING_URL,{question_id:q.id,response,anonymous_session_id:getSessionId(),idempotency_key:crypto.randomUUID(),app_version:APP_VERSION,question_version:q.updated_at||APP_VERSION,website:''});
+}
+
+async function fetchPublishedQuestions(){
+  const pageSize=1000;
+  const all=[];
+  for(let offset=0;;offset+=pageSize){
+    const params=new URLSearchParams({select:'id,category,difficulty,question,answer,reference,passage_text,updated_at',status:'eq.Published',order:'id.asc'});
+    const response=await fetch(`${QUESTIONS_URL}?${params}`,{
+      cache:'no-store',
+      headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,Range:`${offset}-${offset+pageSize-1}`}
+    });
+    if(!response.ok)throw new Error(`Question request failed (${response.status})`);
+    const page=await response.json();
+    if(!Array.isArray(page))throw new Error('Unexpected question response');
+    all.push(...page);
+    if(page.length<pageSize)break;
+  }
+  return all;
 }
 
 async function load(){
-  try{const r=await fetch('data/questions.json',{cache:'no-store'});if(!r.ok)throw Error(r.status);const d=await r.json();s.questions=Array.isArray(d)?d:[d];if(!s.questions.length)throw Error('No published questions found');renderCategories();show('home')}
-  catch(e){console.error(e);document.querySelector('#errorText').textContent='The question file could not be loaded.';show('error')}
+  try{s.questions=await fetchPublishedQuestions();if(!s.questions.length)throw Error('No published questions found');renderCategories();show('home')}
+  catch(e){console.error(e);document.querySelector('#errorText').textContent='Published questions could not be loaded. Please refresh and try again.';show('error')}
 }
 function renderCategories(){
   const categories=[...new Set(s.questions.map(q=>(q.category||'Uncategorized').trim()))].sort();
@@ -65,7 +86,7 @@ function nextQuestion(){
 }
 answerBtn.onclick=()=>{const q=s.current;if(!q)return;aCat.textContent=q.category||'';aDiff.textContent=q.difficulty||'';aQuestion.textContent=q.question||'';aText.textContent=q.answer||'';aRef.textContent=q.reference||'No reference provided';resetAnswerControls();show('answer')};
 backBtn.onclick=returnHome;
-nextBtn.onclick=()=>{if(!s.category)returnHome();else nextQuestion()};
+nextBtn.onclick=returnHome;
 
 async function handleLearning(responseValue,selectedButton){
   const q=s.current;if(!q)return;setBusy([knewBtn,learningBtn],true);learningMessage.textContent='Saving…';
