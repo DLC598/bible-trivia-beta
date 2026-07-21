@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Bible Trivia Studio</title>
-  <link rel="stylesheet" href="admin.css?v=1.2">
+  <link rel="stylesheet" href="admin.css?v=1.3">
 </head>
 <body>
   <section id="loginView" class="login-page">
@@ -28,13 +28,14 @@
       <nav>
         <button class="nav-item active" data-view="overview">⌂ <span>Dashboard</span></button>
         <button class="nav-item" data-view="questions">▤ <span>Question Bank</span></button>
+        <button class="nav-item" id="navReview">✓ <span>Review Questions</span><b id="reviewBadge" class="badge">0</b></button>
         <button class="nav-item" id="navAddQuestion">＋ <span>Add Question</span></button>
         <button class="nav-item" id="navImport">⇧ <span>Import Questions</span></button>
         <button class="nav-item" data-view="categories">◇ <span>Categories</span></button>
         <button class="nav-item" data-view="feedback">● <span>Feedback</span><b id="feedbackBadge" class="badge">0</b></button>
       </nav>
       <div class="app-status">
-        <span>APP STATUS</span><strong>LIVE</strong><p>Studio MVP 1.2</p>
+        <span>APP STATUS</span><strong>LIVE</strong><p>Studio MVP 1.3</p>
         <a href="index.html" target="_blank" rel="noopener">View Live App ↗</a>
       </div>
       <button id="signOutBtn" class="signout">Sign Out</button>
@@ -49,24 +50,35 @@
       <p id="dashboardMessage" class="message" aria-live="polite"></p>
 
       <section id="overviewView" class="view">
-        <div class="metrics">
+        <div class="metrics review-metrics">
           <article><span>Total Questions</span><strong id="totalQuestionsMetric">0</strong><small>Database question bank</small></article>
-          <article><span>Published</span><strong id="publishedMetric">0</strong><small>Ready for the live app</small></article>
-          <article><span>Feedback Items</span><strong id="feedbackMetric">0</strong><small id="newFeedbackText">0 new</small></article>
-          <article><span>Needs Attention</span><strong id="attentionMetric">0</strong><small>Unresolved negative reports</small></article>
+          <article><span>Reviewed</span><strong id="reviewedMetric">0</strong><small id="reviewedPercentText">0% complete</small></article>
+          <article><span>Remaining</span><strong id="remainingMetric">0</strong><small>Not yet marked reviewed</small></article>
+          <article><span>Needs More Work</span><strong id="moreWorkMetric">0</strong><small>Flagged editorial queue</small></article>
         </div>
+
+        <section class="panel review-launch">
+          <div>
+            <p class="eyebrow">EDITORIAL WORKBENCH</p>
+            <h2>Question Review Queue</h2>
+            <p>Work through flagged questions first, then continue through every question not yet marked Reviewed.</p>
+            <div class="progress-track"><span id="reviewProgressBar"></span></div>
+            <small id="reviewProgressText">0 of 0 reviewed</small>
+          </div>
+          <button id="startReviewBtn">Start Reviewing</button>
+        </section>
 
         <div class="overview-grid">
           <section class="panel wide"><div class="panel-head"><div><h2>Question Management</h2><p>Recently updated questions</p></div><div><button data-view="questions" class="secondary jump">View All</button><button id="overviewAddBtn">+ Add Question</button></div></div><div id="recentQuestions" class="question-list"></div></section>
           <section class="panel"><div class="panel-head"><div><h2>Recent Feedback</h2><p>Latest reports from players</p></div><button data-view="feedback" class="secondary jump">View All</button></div><div id="recentFeedback" class="feedback-list"></div></section>
           <section class="panel categories-panel"><div class="panel-head"><div><h2>Categories</h2><p>Question distribution</p></div><button data-view="categories" class="secondary jump">Manage</button></div><div id="categoryPreview" class="category-preview"></div></section>
-          <section class="panel"><div class="panel-head"><div><h2>Quick Actions</h2><p>Common administration tasks</p></div></div><div class="quick-actions"><button id="quickAdd">＋<span>Add New Question<small>Create one question</small></span></button><button id="importBtn">⇧<span>Import Questions<small>Excel, CSV, or JSON</small></span></button><button data-view="feedback" class="jump">●<span>Review Feedback<small>Resolve player reports</small></span></button><button id="exportBtn">⇩<span>Export Published JSON<small>Download current bank</small></span></button></div></section>
+          <section class="panel"><div class="panel-head"><div><h2>Quick Actions</h2><p>Common administration tasks</p></div></div><div class="quick-actions"><button id="quickReview">✓<span>Continue Reviewing<small>Flagged questions first</small></span></button><button id="quickAdd">＋<span>Add New Question<small>Create one question</small></span></button><button id="importBtn">⇧<span>Import Questions<small>Excel, CSV, or JSON</small></span></button><button data-view="feedback" class="jump">●<span>Review Feedback<small>Resolve player reports</small></span></button><button id="exportBtn">⇩<span>Export Published JSON<small>Download current bank</small></span></button></div></section>
         </div>
       </section>
 
       <section id="questionsView" class="view hidden">
-        <div class="page-tools"><div><input id="questionSearch" type="search" placeholder="Search question, answer, ID, or reference"><select id="questionCategoryFilter"><option value="all">All categories</option></select><select id="questionStatusFilter"><option value="all">All statuses</option><option>Published</option><option>Draft</option><option>Retired</option></select></div><div class="tool-buttons"><button id="questionsImportBtn" class="secondary">Import</button><button id="addQuestionBtn">+ Add Question</button></div></div>
-        <section class="panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Question</th><th>Category</th><th>Difficulty</th><th>Status</th><th>Updated</th><th></th></tr></thead><tbody id="questionsBody"></tbody></table></div></section>
+        <div class="page-tools"><div><input id="questionSearch" type="search" placeholder="Search question, answer, ID, or reference"><select id="questionCategoryFilter"><option value="all">All categories</option></select><select id="questionStatusFilter"><option value="all">All publication statuses</option><option>Published</option><option>Draft</option><option>Retired</option></select><select id="questionReviewFilter"><option value="all">All review statuses</option><option value="unreviewed">Unreviewed</option><option value="reviewed">Reviewed</option><option value="needs-work">Needs More Work</option></select></div><div class="tool-buttons"><button id="questionsReviewBtn" class="secondary">Start Review</button><button id="questionsImportBtn" class="secondary">Import</button><button id="addQuestionBtn">+ Add Question</button></div></div>
+        <section class="panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Question</th><th>Category</th><th>Difficulty</th><th>Publication</th><th>Review</th><th>Updated</th><th></th></tr></thead><tbody id="questionsBody"></tbody></table></div></section>
       </section>
 
       <section id="feedbackView" class="view hidden">
@@ -78,13 +90,18 @@
     </main>
   </div>
 
-  <dialog id="questionDialog">
+  <dialog id="questionDialog" class="question-dialog">
     <form id="questionForm" method="dialog">
-      <div class="dialog-head"><div><p class="eyebrow">QUESTION EDITOR</p><h2 id="dialogTitle">Add Question</h2></div><button type="button" id="closeDialog" class="icon-btn">×</button></div>
+      <div class="dialog-head"><div><p class="eyebrow">QUESTION EDITOR</p><h2 id="dialogTitle">Add Question</h2><p id="editorQueueText" class="editor-queue-text"></p></div><button type="button" id="closeDialog" class="icon-btn">×</button></div>
       <input id="originalQuestionId" type="hidden">
-      <div class="form-grid"><label>Question ID<input id="questionId" required placeholder="BT-0001"></label><label>Category<select id="questionCategory" required></select></label><label>Difficulty<select id="questionDifficulty"><option>Easy</option><option selected>Medium</option><option>Hard</option></select></label><label>Status<select id="questionStatus"><option>Draft</option><option>Published</option><option>Retired</option></select></label></div>
-      <label>Question<textarea id="questionText" required></textarea></label><label>Answer<textarea id="answerText" required></textarea></label><label>Scripture Reference<input id="referenceText" placeholder="Matthew 5–7"></label>
-      <div class="dialog-actions"><button type="button" id="cancelDialog" class="secondary">Cancel</button><button type="submit">Save Question</button></div>
+      <div class="form-grid"><label>Question ID<input id="questionId" required placeholder="BTQ-0001"></label><label>Category<select id="questionCategory" required></select></label><label>Difficulty<select id="questionDifficulty"><option>Easy</option><option selected>Medium</option><option>Hard</option></select></label><label>Publication Status<select id="questionStatus"><option>Draft</option><option>Published</option><option>Retired</option></select></label></div>
+      <label>Question<textarea id="questionText" required></textarea></label>
+      <label>Answer<textarea id="answerText" required></textarea></label>
+      <label>Scripture Reference<input id="referenceText" placeholder="Matthew 5:1–12"></label>
+      <label>Passage Text<textarea id="passageText" class="passage-text" placeholder="Paste the Scripture passage here. This is private editorial content unless later added to the player experience."></textarea></label>
+      <label>Internal Notes<textarea id="internalNotes" placeholder="Private notes, concerns, source details, or revision reminders."></textarea></label>
+      <fieldset class="review-box"><legend>Editorial Review</legend><label class="check-row"><input id="questionReviewed" type="checkbox"><span><strong>Reviewed</strong><small>I have checked this question, answer, reference, and passage.</small></span></label><label class="check-row warning-check"><input id="questionNeedsWork" type="checkbox"><span><strong>Needs More Work</strong><small>Keep this question at the front of the review queue.</small></span></label><p id="reviewedDateText" class="review-date"></p></fieldset>
+      <div class="dialog-actions editor-actions"><button type="button" id="previousQuestionBtn" class="secondary">← Previous</button><span class="action-spacer"></span><button type="button" id="cancelDialog" class="secondary">Close</button><button type="submit" id="saveQuestionBtn">Save</button><button type="button" id="saveNextBtn">Save & Next Review →</button></div>
     </form>
   </dialog>
 
@@ -108,6 +125,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="admin.js?v=1.2"></script>
+  <script src="admin.js?v=1.3"></script>
 </body>
 </html>
