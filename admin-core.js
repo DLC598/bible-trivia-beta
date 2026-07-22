@@ -7,6 +7,8 @@ const categoryBanners={Doctrine:'Doctrine Banner.png',Geography:'Geography Banne
 const allowedDifficulties=['Easy','Medium','Hard'];
 let feedback=[];
 let questions=[];
+let feedbackSummary=[];
+let learningResponses=[];
 let importRows=[];
 let workbook=null;
 
@@ -55,15 +57,43 @@ function renderOverview(){
   $('recentFeedback').innerHTML=feedback.slice(0,5).map(f=>`<div class="feedback-row"><div><strong>${esc(f.comment||((f.vote===1)?'Good question':'Needs attention'))}</strong><small>${esc(f.question_id)} · ${esc((f.issue_tags||[]).join(', ')||'No issue tag')}</small></div><span class="vote ${f.vote===1?'vote-positive':'vote-negative'}">${f.vote===1?'Positive':'Attention'}</span></div>`).join('')||'<div class="empty">No feedback yet.</div>';
   const counts=categoryCounts();
   $('categoryPreview').innerHTML=Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`<div class="category-pill"><strong>${esc(c)}</strong><span>${n} question${n===1?'':'s'}</span></div>`).join('')||'<div class="empty">Import the current bank to see categories.</div>';
+  renderLearningAnalytics();
+}
+function learningAnalytics(){
+  const total=learningResponses.length;
+  const knewIt=learningResponses.filter(r=>r.response==='Knew It').length;
+  const percent=total?Math.round(knewIt/total*100):0;
+  const byCategory={};
+  learningResponses.forEach(r=>{
+    const q=questions.find(item=>item.id===r.question_id);
+    const cat=q?.category||'Uncategorized';
+    byCategory[cat]=byCategory[cat]||{knewIt:0,total:0};
+    byCategory[cat].total++;
+    if(r.response==='Knew It')byCategory[cat].knewIt++;
+  });
+  return{total,knewIt,percent,byCategory};
+}
+function renderLearningAnalytics(){
+  const {total,knewIt,percent,byCategory}=learningAnalytics();
+  $('learningKnewItBar').style.width=`${percent}%`;
+  $('learningOverallText').textContent=total?`${percent}% Knew It · ${100-percent}% Still Learning (${total} response${total===1?'':'s'})`:'No learning responses yet.';
+  const rows=Object.entries(byCategory).sort((a,b)=>b[1].total-a[1].total);
+  $('learningByCategory').innerHTML=rows.length?rows.map(([cat,d])=>{const pct=d.total?Math.round(d.knewIt/d.total*100):0;return `<div class="learning-category-row"><strong>${esc(cat)}</strong><div class="progress-track small"><span style="width:${pct}%"></span></div><small>${pct}% Knew It (${d.total})</small></div>`}).join(''):'<div class="empty">No learning responses yet.</div>';
 }
 function renderCategories(){const counts=categoryCounts();const categories=[...new Set([...Object.keys(categoryBanners),...Object.keys(counts)])].sort();$('categoriesGrid').innerHTML=categories.map(c=>`<article class="category-card"><h3>${esc(c)}</h3><p>${counts[c]||0} question${counts[c]===1?'':'s'}</p><small>${categoryBanners[c]?'Banner connected':'No banner assigned'}</small></article>`).join('')}
-function renderAll(){populateCategoryControls();renderOverview();renderQuestions();renderFeedback();renderCategories()}
+function renderAll(){populateCategoryControls();renderOverview();renderQuestions();renderFeedback();renderFeedbackInsights();renderCategories()}
 
 async function loadData(){
   setMessage('Loading dashboard…');
-  const [qRes,fRes]=await Promise.all([db.from('questions').select('*').order('updated_at',{ascending:false}).limit(5000),db.from('feedback_events').select('feedback_event_id,question_id,vote,issue_tags,comment,app_version,question_version,processing_status,submitted_at').order('submitted_at',{ascending:false}).limit(1000)]);
+  const [qRes,fRes,fsRes,lrRes]=await Promise.all([
+    db.from('questions').select('*').order('updated_at',{ascending:false}).limit(5000),
+    db.from('feedback_events').select('feedback_event_id,question_id,vote,issue_tags,comment,app_version,question_version,processing_status,submitted_at').order('submitted_at',{ascending:false}).limit(1000),
+    db.from('feedback_question_summary').select('*').limit(5000),
+    db.from('learning_response_events').select('learning_response_event_id,question_id,response,submitted_at').order('submitted_at',{ascending:false}).limit(5000)
+  ]);
   questions=qRes.error?[]:(qRes.data||[]);feedback=fRes.error?[]:(fRes.data||[]);
-  const errors=[qRes.error?.message,fRes.error?.message].filter(Boolean);
+  feedbackSummary=fsRes.error?[]:(fsRes.data||[]);learningResponses=lrRes.error?[]:(lrRes.data||[]);
+  const errors=[qRes.error?.message,fRes.error?.message,fsRes.error?.message,lrRes.error?.message].filter(Boolean);
   setMessage(errors.length?`Some data could not be loaded: ${errors.join(' | ')}`:`Loaded ${questions.length} questions and ${feedback.length} feedback items.`);
   renderAll();
   await loadQuestionSubmissions();
