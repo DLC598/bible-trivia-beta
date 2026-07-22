@@ -1,5 +1,6 @@
 let reviewHistory=[];
 let editorMode='normal';
+let editorReturnView='questions';
 
 function reviewQueue(excludeId=''){
   const flagged=questions.filter(q=>q.id!==excludeId&&q.needs_more_work).sort((a,b)=>String(a.id).localeCompare(String(b.id),undefined,{numeric:true}));
@@ -52,6 +53,16 @@ function renderQuestions(){
   $('questionsBody').innerHTML=rows.length?rows.map(q=>`<tr><td><strong>${esc(q.id)}</strong></td><td class="question-cell"><strong>${esc(q.question)}</strong><br><small>${esc(q.answer)}</small></td><td>${esc(q.category)}</td><td>${esc(q.difficulty)}</td><td><span class="status status-${esc(q.status)}">${esc(q.status)}</span></td><td>${reviewLabel(q)}</td><td>${esc(fmtDate(q.updated_at))}</td><td><div class="row-actions"><button class="secondary edit-question" data-id="${esc(q.id)}">Edit</button></div></td></tr>`).join(''):'<tr><td colspan="8" class="empty">No questions match these filters.</td></tr>';
   document.querySelectorAll('.edit-question').forEach(b=>b.onclick=()=>openQuestionDialog(questions.find(q=>q.id===b.dataset.id),'normal'));
 }
+function renderFeedback(){
+  const rows=filteredFeedback();
+  $('feedbackBody').innerHTML=rows.length?rows.map(x=>{const tags=(x.issue_tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')||'<span class="tag">None</span>';const options=statuses.map(s=>`<option ${s===x.processing_status?'selected':''}>${s}</option>`).join('');return `<tr><td>${esc(fmtDate(x.submitted_at))}</td><td><strong>${esc(x.question_id)}</strong></td><td><span class="vote ${x.vote===1?'vote-positive':'vote-negative'}">${x.vote===1?'Positive':'Attention'}</span></td><td><div class="tags">${tags}</div></td><td>${esc(x.comment||'')}</td><td><select class="status-select" data-id="${x.feedback_event_id}">${options}</select></td><td><div class="row-actions"><button class="secondary edit-feedback-question" data-question-id="${esc(x.question_id)}">Edit Question</button></div></td></tr>`}).join(''):'<tr><td colspan="7" class="empty">No feedback matches these filters.</td></tr>';
+  document.querySelectorAll('.status-select').forEach(el=>el.onchange=()=>saveFeedbackStatus(el));
+  document.querySelectorAll('.edit-feedback-question').forEach(b=>b.onclick=()=>{
+    const q=questions.find(item=>item.id===b.dataset.questionId);
+    if(!q){setMessage(`Question ${b.dataset.questionId} could not be found — it may have been deleted.`);return;}
+    openQuestionDialog(q,'normal','feedback');
+  });
+}
 function renderAll(){populateCategoryControls();renderOverview();renderQuestions();renderFeedback();renderCategories()}
 
 function updateEditorQueueText(q){
@@ -59,8 +70,9 @@ function updateEditorQueueText(q){
   $('editorQueueText').textContent=editorMode==='review'?`Review queue: ${queue.length+(q?1:0)} remaining. Flagged questions are shown first.`:(q?.reviewed?`Reviewed ${fmtDate(q.reviewed_at)}.`:'Not yet marked reviewed.');
   $('previousQuestionBtn').disabled=!reviewHistory.length;
 }
-function openQuestionDialog(q=null,mode='normal'){
+function openQuestionDialog(q=null,mode='normal',returnView='questions'){
   editorMode=mode;
+  editorReturnView=returnView;
   $('questionForm').reset();
   $('originalQuestionId').value=q?.id||'';
   $('dialogTitle').textContent=q?'Edit Question':'Add Question';
@@ -130,7 +142,7 @@ async function persistQuestion(nextAfterSave=false){
     const next=reviewQueue(priorId)[0];
     if(next){openQuestionDialog(next,'review');setMessage('Question saved. Next review question opened.');}
     else{$('questionDialog').close();setMessage('Review queue complete. Every question is reviewed and no questions are flagged for more work.');showView('questions');}
-  }else{$('questionDialog').close();setMessage('Question saved.');showView('questions');}
+  }else{$('questionDialog').close();setMessage('Question saved.');showView(editorReturnView);}
   return true;
 }
 async function deleteQuestion(){
