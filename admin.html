@@ -7,6 +7,7 @@
   <title>Bible Trivia Studio</title>
   <link rel="stylesheet" href="admin.css?v=1.3">
   <link rel="stylesheet" href="admin-review.css?v=1.4">
+  <link rel="stylesheet" href="admin-modern.css?v=2.0">
 </head>
 <body>
   <section id="loginView" class="login-page">
@@ -29,6 +30,7 @@
       <nav>
         <button class="nav-item active" data-view="overview">⌂ <span>Dashboard</span></button>
         <button class="nav-item" data-view="questions">▤ <span>Question Bank</span></button>
+        <button class="nav-item" id="navSubmissions">✉ <span>Submissions</span><b id="submissionBadge" class="badge">0</b></button>
         <button class="nav-item" id="navReview">✓ <span>Review Questions</span><b id="reviewBadge" class="badge">0</b></button>
         <button class="nav-item" id="navAddQuestion">＋ <span>Add Question</span></button>
         <button class="nav-item" id="navImport">⇧ <span>Import Questions</span></button>
@@ -36,7 +38,7 @@
         <button class="nav-item" data-view="feedback">● <span>Feedback</span><b id="feedbackBadge" class="badge">0</b></button>
       </nav>
       <div class="app-status">
-        <span>APP STATUS</span><strong>LIVE</strong><p>Studio MVP 1.4</p>
+        <span>APP STATUS</span><strong>LIVE</strong><p>Studio MVP 2.0</p>
         <a href="index.html" target="_blank" rel="noopener">View Live App ↗</a>
       </div>
       <button id="signOutBtn" class="signout">Sign Out</button>
@@ -82,6 +84,18 @@
         <section class="panel"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Question</th><th>Category</th><th>Difficulty</th><th>Publication</th><th>Review</th><th>Updated</th><th></th></tr></thead><tbody id="questionsBody"></tbody></table></div></section>
       </section>
 
+      <section id="submissionsView" class="view hidden">
+        <div class="metrics submission-metrics">
+          <article><span>Total Submissions</span><strong id="submissionTotalMetric">0</strong><small>All public submissions</small></article>
+          <article><span>Pending</span><strong id="submissionPendingMetric">0</strong><small>Waiting for review</small></article>
+          <article><span>Approved</span><strong id="submissionApprovedMetric">0</strong><small>Added to question bank</small></article>
+          <article><span>Rejected</span><strong id="submissionRejectedMetric">0</strong><small>Retained in history</small></article>
+        </div>
+        <div class="page-tools"><div><input id="submissionSearch" type="search" placeholder="Search submitted question, answer, or Scripture"><select id="submissionStatusFilter"><option value="all">All statuses</option><option>Pending</option><option>Under Review</option><option>Approved</option><option>Rejected</option></select></div><div class="tool-buttons"><button id="refreshSubmissionsBtn" class="secondary">Refresh Submissions</button></div></div>
+        <p id="submissionsMessage" class="message" aria-live="polite"></p>
+        <section class="panel"><div class="table-wrap"><table><thead><tr><th>Submitted</th><th>Question / Answer</th><th>Category</th><th>Difficulty</th><th>Scripture</th><th>Status</th><th></th></tr></thead><tbody id="submissionsBody"></tbody></table></div></section>
+      </section>
+
       <section id="feedbackView" class="view hidden">
         <div class="page-tools"><div><input id="feedbackSearch" type="search" placeholder="Search question ID, tag, or comment"><select id="voteFilter"><option value="all">All votes</option><option value="1">Positive</option><option value="-1">Needs Attention</option></select><select id="statusFilter"><option value="all">All statuses</option><option>New</option><option>Under Review</option><option>Revision Planned</option><option>Resolved</option><option>Dismissed</option></select></div></div>
         <section class="panel"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Question</th><th>Vote</th><th>Issues</th><th>Comment</th><th>Status</th></tr></thead><tbody id="feedbackBody"></tbody></table></div></section>
@@ -90,6 +104,25 @@
       <section id="categoriesView" class="view hidden"><section class="panel"><div class="panel-head"><div><h2>Category Management</h2><p>Review category totals and banner assignments.</p></div></div><div id="categoriesGrid" class="categories-grid"></div></section></section>
     </main>
   </div>
+
+  <dialog id="submissionDialog" class="submission-dialog">
+    <div class="submission-dialog-card">
+      <div class="dialog-head"><div><p class="eyebrow">PUBLIC QUESTION SUBMISSION</p><h2>Review Submission</h2></div><button type="button" id="closeSubmissionDialog" class="icon-btn">×</button></div>
+      <input id="submissionId" type="hidden">
+      <div class="dialog-status-row"><span>Status:</span><strong id="submissionDialogStatus">Pending</strong></div>
+      <div class="submission-dialog-grid">
+        <label>Question Bank ID<input id="submissionQuestionId" placeholder="BTQ-0001"></label>
+        <label>Category<select id="submissionCategory"><option>Doctrine</option><option>Geography</option><option>Gospels</option><option>History</option><option>People</option><option>Wisdom & Prophets</option></select></label>
+        <label>Difficulty<select id="submissionDifficulty"><option>Easy</option><option selected>Medium</option><option>Hard</option></select></label>
+        <label>Scripture Reference<input id="submissionReference" placeholder="1 Peter 1:22"></label>
+        <label class="wide">Question<textarea id="submissionQuestion"></textarea></label>
+        <label class="wide">Answer<textarea id="submissionAnswer"></textarea></label>
+        <label class="wide">Internal Review Note<textarea id="submissionReviewNote" placeholder="Optional private editorial note"></textarea></label>
+      </div>
+      <p id="submissionDialogMessage" class="submission-dialog-message" aria-live="polite"></p>
+      <div class="dialog-actions submission-actions"><button type="button" id="rejectSubmissionBtn">Reject</button><button type="button" id="saveSubmissionBtn" class="secondary">Save Edits</button><span class="action-spacer"></span><button type="button" id="cancelSubmissionDialog" class="secondary">Close</button><button type="button" id="approveSubmissionBtn">Approve & Add as Draft</button></div>
+    </div>
+  </dialog>
 
   <dialog id="questionDialog" class="question-dialog">
     <form id="questionForm" method="dialog">
@@ -128,5 +161,6 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="admin.js?v=1.2"></script>
   <script src="admin-review.js?v=1.4"></script>
+  <script src="admin-submissions.js?v=2.0"></script>
 </body>
 </html>
