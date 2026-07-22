@@ -157,9 +157,3 @@ $('cancelSubmissionDialog').onclick=()=>$('submissionDialog').close();
 $('saveSubmissionBtn').onclick=saveSubmissionEdits;
 $('approveSubmissionBtn').onclick=approveSubmission;
 $('rejectSubmissionBtn').onclick=rejectSubmission;
-
-const loadDataBeforeSubmissions=loadData;
-loadData=async function(){
-  await loadDataBeforeSubmissions();
-  await loadQuestionSubmissions();
-};
