@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bible Trivia — Get the App</title>
+<style>
+  :root{
+    --ink:#241F2E;
+    --muted:#5B5568;
+    --indigo:#33415C;
+    --indigo-deep:#242E42;
+    --wine:#6B2A3A;
+    --brass:#A98548;
+    --paper:#F8F5EF;
+    --card:#FFFFFF;
+    --card-edge:#E9E2D1;
+    --line:#E4DDCB;
+    --shadow:rgba(36,31,46,.10);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Georgia,"Times New Roman",serif;
+    color:var(--ink);
+    background:var(--paper);
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:0 0 56px}
+
+  /* Hero */
+  .hero{
+    position:relative;
+    padding:40px 24px 34px;
+    text-align:center;
+    background:var(--paper);
+    border-top:3px solid var(--brass);
+    border-bottom:1px solid var(--line);
+  }
+  .hero::before{
+    content:"";
+    position:absolute;inset:0;
+    background:radial-gradient(120% 70% at 50% 0%, rgba(51,65,92,.06) 0%, rgba(51,65,92,0) 60%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    position:relative;
+    font-family:Georgia,serif;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:.7rem;
+    color:var(--brass);
+    font-weight:700;
+  }
+  .hero h1{
+    position:relative;
+    font-size:2.5rem;
+    line-height:1.08;
+    margin:.42em 0 .3em;
+    color:var(--ink);
+    letter-spacing:.005em;
+  }
+  .hero p.tagline{
+    position:relative;
+    margin:0 auto 28px;
+    max-width:32ch;
+    color:var(--muted);
+    font-size:1.03rem;
+  }
+  .cta{
+    position:relative;
+    display:inline-block;
+    background:var(--indigo);
+    color:#F8F5EF;
+    text-decoration:none;
+    font-size:1.12rem;
+    font-weight:700;
+    padding:15px 34px;
+    border-radius:6px;
+    box-shadow:0 8px 20px var(--shadow);
+    letter-spacing:.01em;
+  }
+  .cta:active{transform:translateY(1px)}
+  .cta-note{
+    position:relative;
+    display:block;
+    margin-top:12px;
+    font-size:.8rem;
+    color:var(--muted);
+    font-style:italic;
+  }
+
+  /* Ornamental divider */
+  .divider{
+    display:flex;align-items:center;gap:14px;
+    padding:0 40px;margin:0;
+  }
+  .divider::before,.divider::after{
+    content:"";flex:1;height:1px;background:var(--line);
+  }
+  .divider span{
+    color:var(--brass);font-size:.9rem;line-height:1;
+  }
+
+  /* Section header */
+  .section-head{
+    text-align:center;
+    padding:30px 24px 8px;
+  }
+  .section-head h2{
+    font-size:1.4rem;
+    margin:0 0 8px;
+    color:var(--ink);
+  }
+  .section-head p{
+    color:var(--muted);
+    margin:0 auto;
+    max-width:38ch;
+    font-size:.95rem;
+  }
+
+  /* Platform cards */
+  .platforms{padding:20px 20px 0;display:grid;gap:18px}
+  .platform-card{
+    background:var(--card);
+    border:1px solid var(--card-edge);
+    border-radius:10px;
+    padding:22px 20px 24px;
+  }
+  .platform-card.iphone{border-top:3px solid var(--indigo)}
+  .platform-card.android{border-top:3px solid var(--wine)}
+  .platform-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:0 0 16px;
+    font-size:1.1rem;
+    color:var(--ink);
+  }
+  .platform-title .badge{
+    width:28px;height:28px;
+    border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .iphone .badge{background:var(--indigo)}
+  .android .badge{background:var(--wine)}
+  .platform-title .badge svg{width:15px;height:15px}
+
+  .step{
+    display:grid;
+    grid-template-columns:40px 1fr;
+    gap:14px;
+    align-items:start;
+    padding:11px 0;
+  }
+  .step + .step{border-top:1px dashed var(--line)}
+  .step-icon{
+    width:40px;height:40px;
+    border-radius:8px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .step-icon svg{width:19px;height:19px}
+  .iphone .step-icon svg{stroke:var(--indigo)}
+  .android .step-icon svg{stroke:var(--wine)}
+  .step-text{padding-top:1px}
+  .step-text .num{
+    font-size:.68rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--brass);
+    font-weight:700;
+    display:block;
+    margin-bottom:2px;
+  }
+  .step-text p{margin:0;font-size:.94rem;line-height:1.42;font-family:Georgia,serif;color:var(--ink)}
+  .step-text strong{color:var(--ink)}
+
+  /* Footer */
+  footer{
+    text-align:center;
+    padding:36px 24px 0;
+    color:var(--muted);
+    font-size:.82rem;
+    font-style:italic;
+  }
+
+  @media (max-width:400px){
+    .hero h1{font-size:2.15rem}
+  }
+
+  @media (prefers-reduced-motion:no-preference){
+    .hero, .section-head, .platform-card{
+      animation:rise .5s ease-out both;
+    }
+    .section-head{animation-delay:.05s}
+    .platforms .platform-card:nth-child(1){animation-delay:.1s}
+    .platforms .platform-card:nth-child(2){animation-delay:.18s}
+    @keyframes rise{
+      from{opacity:0;transform:translateY(8px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">Explore · Remember · Grow</div>
+    <h1>Bible Trivia</h1>
+    <p class="tagline">Scripture-based questions to test what you know and grow in what you don't.</p>
+    <a class="cta" href="https://dlc598.github.io/bible-trivia-beta/">Open the App</a>
+    <span class="cta-note">No download, no account — just tap and go.</span>
+  </section>
+
+  <div class="divider"><span>&#10022;</span></div>
+
+  <section class="section-head">
+    <h2>Add it to your Home Screen</h2>
+    <p>Optional, but it turns the app into an icon you can tap directly — just like any other app on your phone.</p>
+  </section>
+
+  <div class="platforms">
+
+    <div class="platform-card iphone">
+      <h3 class="platform-title">
+        <span class="badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F8F5EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        </span>
+        iPhone (Safari)
+      </h3>
+
+      <div class="step">
+        <div class="step-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/><rect x="4" y="14" width="16" height="7" rx="1.5"/></svg>
+        </div>
+        <div class="step-text">
+          <span class="num">Step 1</span>
+          <p>With the app open, tap the <strong>Share</strong> icon (the square with an arrow) in the bottom toolbar.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </div>
+        <div class="step-text">
+          <span class="num">Step 2</span>
+          <p>Scroll down and tap <strong>Add to Home Screen</strong>.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        </div>
+        <div class="step-text">
+          <span class="num">Step 3</span>
+          <p>Tap <strong>Add</strong> in the top corner. The icon now lives on your Home Screen.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="platform-card android">
+      <h3 class="platform-title">
+        <span class="badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F8F5EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        </span>
+        Android (Chrome)
+      </h3>
+
+      <div class="step">
+        <div class="step-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+        </div>
+        <div class="step-text">
+          <span class="num">Step 1</span>
+          <p>With the app open, tap the <strong>&#8942; menu</strong> (three dots) in the top-right corner.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </div>
+        <div class="step-text">
+          <span class="num">Step 2</span>
+          <p>Tap <strong>Add to Home screen</strong> (sometimes shown as <strong>Install app</strong>).</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        </div>
+        <div class="step-text">
+          <span class="num">Step 3</span>
+          <p>Confirm by tapping <strong>Add</strong>. The icon now lives on your Home Screen.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>Bible Trivia · Scripture-based trivia · No ads, no accounts</footer>
+
+</div>
+</body>
+</html>
