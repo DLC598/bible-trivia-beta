@@ -18,5 +18,9 @@ table{background:#fff!important}thead th{background:#f8fafc!important;color:#475
 .learning-overall{margin-bottom:12px}.learning-category-list{display:grid;gap:8px}
 .learning-category-row{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:10px}
 .learning-category-row .progress-track.small{height:7px;margin:0}
+.preview-dialog{width:min(420px,calc(100% - 24px));max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.preview-dialog .dialog-head{padding:18px 18px 0}
+.preview-frame-wrap{flex:1;overflow:auto;padding:16px}
+#previewFrame{width:100%;height:560px;border:0;border-radius:10px;background:#fff}
 @media(max-width:760px){.submission-dialog-grid{grid-template-columns:1fr}.submission-dialog-grid .wide{grid-column:auto}.topbar{position:static!important}.metrics{grid-template-columns:1fr 1fr!important}.insights-grid{grid-template-columns:1fr}.learning-category-row{grid-template-columns:90px 1fr auto}}
 @media(max-width:480px){.metrics{grid-template-columns:1fr!important}.submission-dialog-card{padding:17px}}

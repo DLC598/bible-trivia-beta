@@ -1,6 +1,7 @@
 let reviewHistory=[];
 let editorMode='normal';
 let editorReturnView='questions';
+let editorSnapshot=null;
 
 function reviewQueue(excludeId=''){
   const flagged=questions.filter(q=>q.id!==excludeId&&q.needs_more_work).sort((a,b)=>String(a.id).localeCompare(String(b.id),undefined,{numeric:true}));
@@ -29,6 +30,28 @@ function renderQuestions(){
   $('questionsBody').innerHTML=rows.length?rows.map(q=>`<tr><td><strong>${esc(q.id)}</strong></td><td class="question-cell"><strong>${esc(q.question)}</strong><br><small>${esc(q.answer)}</small></td><td>${esc(q.category)}</td><td>${esc(q.difficulty)}</td><td><span class="status status-${esc(q.status)}">${esc(q.status)}</span></td><td>${reviewLabel(q)}</td><td>${esc(fmtDate(q.updated_at))}</td><td><div class="row-actions"><button class="secondary edit-question" data-id="${esc(q.id)}">Edit</button></div></td></tr>`).join(''):'<tr><td colspan="8" class="empty">No questions match these filters.</td></tr>';
   document.querySelectorAll('.edit-question').forEach(b=>b.onclick=()=>openQuestionDialog(questions.find(q=>q.id===b.dataset.id),'normal'));
 }
+function currentEditorValues(){
+  return{
+    id:$('questionId').value,
+    category:$('questionCategory').value,
+    difficulty:$('questionDifficulty').value,
+    status:$('questionStatus').value,
+    question:$('questionText').value,
+    answer:$('answerText').value,
+    reference:$('referenceText').value,
+    passage_text:$('passageText').value,
+    internal_notes:$('internalNotes').value,
+    reviewed:$('questionReviewed').checked,
+    needs_more_work:$('questionNeedsWork').checked
+  };
+}
+function hasUnsavedChanges(){
+  return JSON.stringify(currentEditorValues())!==JSON.stringify(editorSnapshot);
+}
+function attemptCloseDialog(){
+  if(hasUnsavedChanges()&&!window.confirm('Discard unsaved changes to this question?'))return;
+  $('questionDialog').close();
+}
 function updateEditorQueueText(q){
   const queue=reviewQueue(q?.id||'');
   $('editorQueueText').textContent=editorMode==='review'?`Review queue: ${queue.length+(q?1:0)} remaining. Flagged questions are shown first.`:(q?.reviewed?`Reviewed ${fmtDate(q.reviewed_at)}.`:'Not yet marked reviewed.');
@@ -56,7 +79,44 @@ function openQuestionDialog(q=null,mode='normal',returnView='questions'){
   $('deleteQuestionBtn').classList.toggle('hidden',!q);
   updateEditorQueueText(q);
   $('saveNextBtn').classList.toggle('hidden',mode!=='review');
+  editorSnapshot=currentEditorValues();
   $('questionDialog').showModal();
+}
+function buildPreviewHtml(){
+  const category=esc($('questionCategory').value||'');
+  const difficulty=esc($('questionDifficulty').value||'');
+  const question=esc($('questionText').value.trim())||'(No question text yet)';
+  const answer=esc($('answerText').value.trim())||'(No answer text yet)';
+  const reference=esc($('referenceText').value.trim())||'No reference provided';
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="learning.css">
+<style>body{padding:10px}</style>
+</head><body>
+<main class="shell">
+<section id="question" class="card">
+  <div class="meta"><span>${category}</span><span>${difficulty}</span></div>
+  <div class="screen-kicker">✦ QUESTION ✦</div>
+  <div class="question-frame"><p class="question">${question}</p></div>
+  <div class="actions"><button type="button" id="revealBtn">📖 Reveal Answer</button></div>
+</section>
+<section id="answer" class="card hidden">
+  <div class="meta"><span>${category}</span><span>${difficulty}</span></div>
+  <div class="screen-kicker">✦ ANSWER ✦</div>
+  <p class="answer-question">${question}</p>
+  <div class="answer-panel"><p class="answer">${answer}</p></div>
+  <div class="scripture-panel"><span>Scripture Reference</span><p>${reference}</p></div>
+  <div class="actions"><button type="button" id="backBtn" class="secondary">← Back to Question</button></div>
+</section>
+</main>
+<script>
+document.getElementById('revealBtn').onclick=()=>{document.getElementById('question').classList.add('hidden');document.getElementById('answer').classList.remove('hidden')};
+document.getElementById('backBtn').onclick=()=>{document.getElementById('answer').classList.add('hidden');document.getElementById('question').classList.remove('hidden')};
+</script>
+</body></html>`;
+}
+function openPreviewDialog(){
+  $('previewFrame').srcdoc=buildPreviewHtml();
+  $('previewDialog').showModal();
 }
 function startReview(){
   const queue=reviewQueue();
@@ -131,7 +191,10 @@ async function saveQuestion(e){e.preventDefault();await persistQuestion(false);}
 
 [$('navAddQuestion'),$('overviewAddBtn'),$('quickAdd'),$('addQuestionBtn')].forEach(b=>b.onclick=()=>openQuestionDialog());
 [$('navReview'),$('startReviewBtn'),$('quickReview'),$('questionsReviewBtn')].forEach(b=>b.onclick=startReview);
-$('closeDialog').onclick=$('cancelDialog').onclick=()=>$('questionDialog').close();
+$('closeDialog').onclick=$('cancelDialog').onclick=attemptCloseDialog;
+$('questionDialog').addEventListener('cancel',e=>{if(hasUnsavedChanges()&&!window.confirm('Discard unsaved changes to this question?'))e.preventDefault()});
+$('previewQuestionBtn').onclick=openPreviewDialog;
+$('closePreviewDialog').onclick=()=>$('previewDialog').close();
 $('questionForm').onsubmit=saveQuestion;
 $('saveNextBtn').onclick=()=>persistQuestion(true);
 $('previousQuestionBtn').onclick=openPreviousReview;
