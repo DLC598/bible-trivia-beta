@@ -203,3 +203,7 @@ footer{text-align:center;font-size:.82rem;padding:24px 4px 10px}
 }
 @media(max-width:390px){.category-shield{width:56px}}
 @media(max-width:360px){.checkboxes{grid-template-columns:1fr}.category-shield{width:50px}}
+@media(max-height:700px){
+  .card:not(#home){padding:8px}
+  .question{min-height:0}
+}

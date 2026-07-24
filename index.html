@@ -22,6 +22,7 @@
 header{position:relative;min-height:clamp(265px,44vw,350px);margin:-10px -12px 12px;padding:clamp(28px,5vw,46px) 18px 30px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:#FEECC7;border-bottom:3px solid rgba(75,39,17,.78);box-shadow:0 10px 22px rgba(64,34,14,.34);transition:min-height .18s ease,padding .18s ease}
 header small,header h1,header p,header::after{position:relative;z-index:1}header small{color:#3b2515;text-shadow:0 1px rgba(255,247,220,.9)}header h1{color:#2b160b;text-shadow:0 2px rgba(255,244,208,.9),0 4px 8px rgba(66,33,13,.28)}header p{max-width:590px;color:#3b2415;font-weight:700;text-shadow:0 1px rgba(255,247,220,.9)}header::after{color:#4f301b}
 body.inner-screen header{min-height:104px;padding:16px 18px 12px;margin-bottom:8px}body.inner-screen header small,body.inner-screen header p,body.inner-screen header::after{display:none}body.inner-screen header h1{font-size:clamp(1.9rem,7vw,2.7rem);margin:0}
+body.no-header header{display:none}
 @media(max-width:520px){header{min-height:255px;margin:calc(-7px - env(safe-area-inset-top)) -9px 10px;padding:calc(24px + env(safe-area-inset-top)) 12px 24px}header h1{font-size:clamp(2.55rem,13vw,3.65rem)}header p{font-size:.94rem;max-width:340px}body.inner-screen header{min-height:86px;padding:calc(10px + env(safe-area-inset-top)) 12px 8px}body.inner-screen header h1{font-size:2rem}}
 @media(max-width:390px){header{min-height:235px}header p{font-size:.86rem}}
 </style>

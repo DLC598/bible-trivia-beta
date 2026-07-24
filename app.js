@@ -1,6 +1,6 @@
 const s={questions:[],current:null,category:null,categories:[],seen:new Set()};
 const v={loading:document.querySelector('#loading'),error:document.querySelector('#error'),home:document.querySelector('#home'),information:document.querySelector('#information'),question:document.querySelector('#question'),answer:document.querySelector('#answer'),submitQuestion:document.querySelector('#submitQuestion')};
-const show=n=>{Object.values(v).forEach(x=>x.classList.add('hidden'));v[n].classList.remove('hidden');document.body.classList.toggle('inner-screen',n==='question'||n==='answer'||n==='submitQuestion'||n==='information');scrollTo(0,0)};
+const show=n=>{Object.values(v).forEach(x=>x.classList.add('hidden'));v[n].classList.remove('hidden');document.body.classList.toggle('inner-screen',n==='question'||n==='answer'||n==='submitQuestion'||n==='information');document.body.classList.toggle('no-header',n==='question'||n==='answer');scrollTo(0,0)};
 
 const goodBtn=document.getElementById('goodBtn');
 const badBtn=document.getElementById('badBtn');
