@@ -3,7 +3,7 @@ const publicKey=['sb','publishable','LV4AP960e5zTc4hTwCwTaw','Ha','e2B2J'].join(
 const db=window.supabase.createClient(projectUrl,publicKey);
 const $=id=>document.getElementById(id);
 const statuses=['New','Under Review','Revision Planned','Resolved','Dismissed'];
-const categoryBanners={Doctrine:'Doctrine Banner.png',Geography:'Geography Banner.png',Gospels:'Gospels Banner.png',History:'History Banner.png',People:'People Banner.png','Wisdom & Prophets':'Wisdom and Prophets Banner.png'};
+const categoryBanners={Doctrine:'Doctrine Banner.png',Geography:'Geography Banner.png',Gospels:'Gospels Banner.png',History:'History Banner.png',People:'People Banner.png',Writings:'Writings Banner.png'};
 const allowedDifficulties=['Easy','Medium','Hard'];
 let feedback=[];
 let questions=[];
