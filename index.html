@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Bible Trivia</title>
 <meta name="description" content="Explore Scripture through beautifully presented Bible trivia questions.">
-<meta name="theme-color" content="#1b3844">
+<meta name="theme-color" content="#33415C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Bible Trivia">
@@ -13,8 +13,11 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="stylesheet" href="style.css?v=20260722-2">
-<link rel="stylesheet" href="learning.css?v=20260722-3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20260724-1">
+<link rel="stylesheet" href="learning.css?v=20260724-1">
 <style>
 header{position:relative;min-height:clamp(265px,44vw,350px);margin:-10px -12px 12px;padding:clamp(28px,5vw,46px) 18px 30px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,rgba(255,244,209,.02),rgba(42,24,12,.20)),url('hero-header.svg') center/cover no-repeat;border-bottom:3px solid rgba(75,39,17,.78);box-shadow:0 10px 22px rgba(64,34,14,.34),inset 0 -28px 34px rgba(44,24,11,.18);transition:min-height .18s ease,padding .18s ease}
 header small,header h1,header p,header::after{position:relative;z-index:1}header small{color:#3b2515;text-shadow:0 1px rgba(255,247,220,.9)}header h1{color:#2b160b;text-shadow:0 2px rgba(255,244,208,.9),0 4px 8px rgba(66,33,13,.28)}header p{max-width:590px;color:#3b2415;font-weight:700;text-shadow:0 1px rgba(255,247,220,.9)}header::after{color:#4f301b}
@@ -28,21 +31,35 @@ body.inner-screen header{min-height:104px;padding:16px 18px 12px;margin-bottom:8
 <header><small>EXPLORE • REMEMBER • GROW</small><h1>Bible Trivia</h1><p>Test your knowledge. Grow in His Word.</p></header>
 <section id="loading" class="card"><p>Preparing the question library…</p></section>
 <section id="error" class="card hidden"><h2>Unable to load questions</h2><p id="errorText"></p></section>
-<section id="home" class="card hidden"><h2>Choose a Category</h2><p class="muted">Choose a path through Scripture.</p><div id="categories" class="grid"></div><div class="submit-question-home"><button id="openSubmitQuestionBtn" type="button">＋ Submit a Question</button><p>Share a Bible question or passage for review.</p></div></section>
+<section id="home" class="card hidden">
+<h2>Choose a Category</h2><p class="muted">Choose a path through Scripture.</p>
+<div id="categories" class="grid"></div>
+<div class="home-pills">
+<button id="openInformationBtn" type="button" class="pill">Information</button>
+<button id="openSubmitQuestionBtn" type="button" class="pill">＋ Submit a Question</button>
+</div>
+</section>
+<section id="information" class="card hidden">
+<div class="screen-kicker">INFORMATION</div>
+<h2>Coming Soon</h2>
+<p class="muted">More information about Bible Trivia is on its way.</p>
+<div class="actions"><button id="infoBackBtn" class="secondary">← Categories</button></div>
+</section>
 <section id="question" class="card hidden">
-<div class="meta"><span id="qCat"></span><span id="qDiff"></span></div>
-<div class="screen-kicker">✦ QUESTION ✦</div><div class="question-frame"><p id="qText" class="question"></p></div>
+<div class="category-banner"><img id="qBannerImg" class="banner-img" src="" alt=""><img id="qBannerShield" class="banner-shield" src="" alt=""><div id="qBannerName" class="banner-category-name"></div></div>
+<div class="screen-kicker">QUESTION</div><div class="question-frame"><p id="qText" class="question"></p></div>
 <div class="actions"><button id="backBtn" class="secondary">← Categories</button><button id="answerBtn">📖 Reveal Answer</button></div>
 </section>
 <section id="answer" class="card hidden">
-<div class="meta"><span id="aCat"></span><span id="aDiff"></span></div>
-<div class="screen-kicker">✦ ANSWER ✦</div><p id="aQuestion" class="answer-question"></p>
+<div class="category-banner"><img id="aBannerImg" class="banner-img" src="" alt=""><img id="aBannerShield" class="banner-shield" src="" alt=""><div id="aBannerName" class="banner-category-name"></div></div>
+<div class="screen-kicker">ANSWER</div><p id="aQuestion" class="answer-question"></p>
 <div class="answer-panel"><p id="aText" class="answer"></p></div>
-<div class="scripture-panel"><span>Scripture Reference</span><p id="aRef"></p></div>
-<section class="learning-check" aria-labelledby="learningPrompt"><h3 id="learningPrompt">How did you do?</h3><p>Your response helps us calibrate the true difficulty.</p><div class="learning-actions"><button id="knewBtn" type="button">✓ I Knew This</button><button id="learningBtn" type="button">📖 Still Learning</button></div><p id="learningMessage" class="response-message" aria-live="polite"></p></section>
-<div class="editorial-label">Help us improve this question</div><div class="feedback-actions"><button id="goodBtn" class="success">👍 Good Question</button><button id="badBtn" class="secondary">👎 Needs Attention</button></div><p id="feedbackMessage" class="response-message" aria-live="polite"></p>
+<div class="scripture-panel"><span>SCRIPTURE</span><p id="aRef"></p></div>
+<section class="learning-check" aria-labelledby="learningPrompt"><h3 id="learningPrompt" class="row-label">HOW DID YOU DO?</h3><div class="learning-actions"><button id="knewBtn" type="button">✓ I Knew This</button><button id="learningBtn" type="button">📖 Still Learning</button></div><p id="learningMessage" class="response-message" aria-live="polite"></p></section>
+<section class="rating-check" aria-labelledby="ratingPrompt"><h3 id="ratingPrompt" class="row-label">RATE THIS QUESTION</h3><div class="feedback-actions"><button id="goodBtn" class="success">👍 Good Question</button><button id="badBtn" class="secondary">👎 Needs Attention</button></div><p id="feedbackMessage" class="response-message" aria-live="polite"></p></section>
 <div id="feedbackPanel" class="panel hidden"><h3>What needs attention?</h3><div class="checkboxes"><label><input type="checkbox" id="fbQuestion"> Question</label><label><input type="checkbox" id="fbAnswer"> Answer</label><label><input type="checkbox" id="fbScripture"> Scripture</label><label><input type="checkbox" id="fbCategory"> Category</label><label><input type="checkbox" id="fbDifficulty"> Difficulty</label></div><textarea id="fbComment" placeholder="Optional comments..."></textarea><div class="panel-actions"><button id="submitFeedbackBtn">Submit Feedback</button><button id="cancelFeedbackBtn">Cancel</button></div></div>
-<div class="actions answer-navigation"><button id="nextBtn">Return to Categories →</button></div>
+<button id="nextBtn" type="button" class="link-btn">← Back to Categories</button>
+<div id="answerShieldRow" class="shield-row"></div>
 </section>
 <section id="submitQuestion" class="card hidden" aria-labelledby="submitQuestionTitle">
 <div class="screen-kicker">✦ COMMUNITY SUBMISSION ✦</div><h2 id="submitQuestionTitle">Submit a Question</h2><p class="muted submit-intro">Fill in as much or as little as you have. At least one of Question, Answer, or Scripture is required.</p>
@@ -57,6 +74,6 @@ body.inner-screen header{min-height:104px;padding:16px 18px 12px;margin-bottom:8
 </section>
 <footer><p>Hundreds of Scripture-based questions • Six categories • Three difficulty levels</p></footer>
 </main>
-<script src="app.js?v=20260722-2"></script>
+<script src="app.js?v=20260724-1"></script>
 </body>
 </html>

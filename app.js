@@ -1,6 +1,6 @@
-const s={questions:[],current:null,category:null,seen:new Set()};
-const v={loading:document.querySelector('#loading'),error:document.querySelector('#error'),home:document.querySelector('#home'),question:document.querySelector('#question'),answer:document.querySelector('#answer'),submitQuestion:document.querySelector('#submitQuestion')};
-const show=n=>{Object.values(v).forEach(x=>x.classList.add('hidden'));v[n].classList.remove('hidden');document.body.classList.toggle('inner-screen',n==='question'||n==='answer'||n==='submitQuestion');scrollTo(0,0)};
+const s={questions:[],current:null,category:null,categories:[],seen:new Set()};
+const v={loading:document.querySelector('#loading'),error:document.querySelector('#error'),home:document.querySelector('#home'),information:document.querySelector('#information'),question:document.querySelector('#question'),answer:document.querySelector('#answer'),submitQuestion:document.querySelector('#submitQuestion')};
+const show=n=>{Object.values(v).forEach(x=>x.classList.add('hidden'));v[n].classList.remove('hidden');document.body.classList.toggle('inner-screen',n==='question'||n==='answer'||n==='submitQuestion'||n==='information');scrollTo(0,0)};
 
 const goodBtn=document.getElementById('goodBtn');
 const badBtn=document.getElementById('badBtn');
@@ -18,6 +18,8 @@ const fbCategory=document.getElementById('fbCategory');
 const fbDifficulty=document.getElementById('fbDifficulty');
 const fbComment=document.getElementById('fbComment');
 const openSubmitQuestionBtn=document.getElementById('openSubmitQuestionBtn');
+const openInformationBtn=document.getElementById('openInformationBtn');
+const infoBackBtn=document.getElementById('infoBackBtn');
 const submitQuestionForm=document.getElementById('submitQuestionForm');
 const submitQuestionBtn=document.getElementById('submitQuestionBtn');
 const cancelQuestionBtn=document.getElementById('cancelQuestionBtn');
@@ -34,12 +36,11 @@ const QUESTIONS_URL=`${SUPABASE_URL}/rest/v1/questions`;
 const FEEDBACK_URL=`${SUPABASE_URL}/functions/v1/submit-feedback`;
 const LEARNING_URL=`${SUPABASE_URL}/functions/v1/submit-learning-response`;
 const SUBMIT_QUESTION_URL=`${SUPABASE_URL}/functions/v1/submit-question`;
-const APP_VERSION='beta-0.6-community-submissions';
+const APP_VERSION='beta-0.7-visual-redesign';
 
-const CATEGORY_BANNERS={
-  'Doctrine':'Doctrine Banner.png','Geography':'Geography Banner.png','Gospels':'Gospels Banner.png','History':'History Banner.png','People':'People Banner.png','Wisdom & Prophets':'Wisdom and Prophets Banner.png'
-};
-const CATEGORY_CLASSES={'Doctrine':'doctrine','Geography':'geography','Gospels':'gospels','History':'history','People':'people','Wisdom & Prophets':'wisdom'};
+const CATEGORY_SLUGS={'Doctrine':'doctrine','Geography':'geography','Gospels':'gospels','History':'history','People':'people','Writings':'writings'};
+const ASSET_EXT={shields:'png',banners:'jpg'};
+function assetPath(kind,category){const slug=CATEGORY_SLUGS[category];return slug?`assets/${kind}/${slug}.${ASSET_EXT[kind]}`:''}
 
 function getSessionId(){const key='bibleTriviaAnonymousSessionId';let id=localStorage.getItem(key);if(!id){id=crypto.randomUUID();localStorage.setItem(key,id)}return id}
 function setBusy(buttons,busy){buttons.forEach(button=>{if(button)button.disabled=busy})}
@@ -85,22 +86,64 @@ async function fetchPublishedQuestions(){
 }
 
 async function load(){
-  try{s.questions=await fetchPublishedQuestions();if(!s.questions.length)throw Error('No published questions found');renderCategories();show('home')}
+  try{
+    s.questions=await fetchPublishedQuestions();
+    if(!s.questions.length)throw Error('No published questions found');
+    s.categories=[...new Set(s.questions.map(q=>(q.category||'Uncategorized').trim()))].sort();
+    renderCategories();
+    renderShieldRow();
+    show('home');
+  }
   catch(e){console.error(e);document.querySelector('#errorText').textContent='Published questions could not be loaded. Please refresh and try again.';show('error')}
 }
+function buildCategoryTile(category,{small=false}={}){
+  const button=document.createElement('button');
+  button.className=small?'category shield-tile':'category';
+  button.type='button';
+  button.setAttribute('aria-label',category);
+  const slug=CATEGORY_SLUGS[category];
+  if(slug){
+    const image=document.createElement('img');
+    image.className='category-shield';
+    image.src=`assets/shields/${slug}.png`;
+    image.alt='';image.loading='eager';image.decoding='async';
+    button.appendChild(image);
+  }else{
+    button.classList.add('text-fallback');
+  }
+  const label=document.createElement('span');
+  label.className='category-label';
+  label.textContent=category;
+  button.appendChild(label);
+  button.onclick=()=>{s.category=category;s.seen.clear();nextQuestion()};
+  return button;
+}
 function renderCategories(){
-  const categories=[...new Set(s.questions.map(q=>(q.category||'Uncategorized').trim()))].sort();
   const box=document.querySelector('#categories');box.innerHTML='';
-  categories.forEach(category=>{const button=document.createElement('button');button.className=`category category-${CATEGORY_CLASSES[category]||'default'}`;button.type='button';button.setAttribute('aria-label',category);const banner=CATEGORY_BANNERS[category];if(banner){const image=document.createElement('img');image.src=encodeURI(banner);image.alt='';image.loading='eager';image.decoding='async';button.appendChild(image)}else{button.textContent=category;button.classList.add('text-fallback')}button.onclick=()=>{s.category=category;s.seen.clear();nextQuestion()};box.appendChild(button)})
+  s.categories.forEach(category=>box.appendChild(buildCategoryTile(category)));
+}
+function renderShieldRow(){
+  const box=document.querySelector('#answerShieldRow');if(!box)return;box.innerHTML='';
+  s.categories.forEach(category=>box.appendChild(buildCategoryTile(category,{small:true})));
+}
+function renderCategoryBanner(prefix,category){
+  const bannerImg=document.getElementById(`${prefix}BannerImg`);
+  const shieldImg=document.getElementById(`${prefix}BannerShield`);
+  const nameEl=document.getElementById(`${prefix}BannerName`);
+  bannerImg.src=assetPath('banners',category);
+  shieldImg.src=assetPath('shields',category);
+  nameEl.textContent=category||'';
 }
 function nextQuestion(){
-  const pool=s.questions.filter(q=>(q.category||'').trim()===s.category);let cand=pool.filter(q=>!s.seen.has(q.id));if(!cand.length){s.seen.clear();cand=pool}const q=cand[Math.floor(Math.random()*cand.length)];s.current=q;s.seen.add(q.id);qCat.textContent=q.category||'';qDiff.textContent=q.difficulty||'';qText.textContent=q.question||'';resetAnswerControls();show('question')
+  const pool=s.questions.filter(q=>(q.category||'').trim()===s.category);let cand=pool.filter(q=>!s.seen.has(q.id));if(!cand.length){s.seen.clear();cand=pool}const q=cand[Math.floor(Math.random()*cand.length)];s.current=q;s.seen.add(q.id);renderCategoryBanner('q',q.category);qText.textContent=q.question||'';resetAnswerControls();show('question')
 }
-answerBtn.onclick=()=>{const q=s.current;if(!q)return;aCat.textContent=q.category||'';aDiff.textContent=q.difficulty||'';aQuestion.textContent=q.question||'';aText.textContent=q.answer||'';aRef.textContent=q.reference||'No reference provided';resetAnswerControls();show('answer')};
+answerBtn.onclick=()=>{const q=s.current;if(!q)return;renderCategoryBanner('a',q.category);aQuestion.textContent=q.question||'';aText.textContent=q.answer||'';aRef.textContent=q.reference||'No reference provided';resetAnswerControls();show('answer')};
 backBtn.onclick=returnHome;
 nextBtn.onclick=returnHome;
 openSubmitQuestionBtn.onclick=()=>{resetSubmissionForm();show('submitQuestion')};
 cancelQuestionBtn.onclick=returnHome;
+openInformationBtn.onclick=()=>show('information');
+infoBackBtn.onclick=()=>show('home');
 submitQuestionForm.onsubmit=async event=>{
   event.preventDefault();
   const payload={question:sqQuestion.value.trim(),category:sqCategory.value,difficulty:sqDifficulty.value,answer:sqAnswer.value.trim(),scripture:sqScripture.value.trim(),anonymous_session_id:getSessionId()};
